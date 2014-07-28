@@ -7,6 +7,8 @@ import geniutil
 import datetime
 import subprocess
 
+CA_CERT_FILE = 'ca-cert.pem'
+CA_KEY_FILE = 'ca-key.pem'
 SA_CERT_FILE = 'sa-cert.pem'
 SA_KEY_FILE = 'sa-key.pem'
 MA_CERT_FILE = 'ma-cert.pem'
