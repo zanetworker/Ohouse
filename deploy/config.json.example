@@ -9,6 +9,12 @@
          "name" : "ohouse"
     },
 
+    "REGISTRATION_SERVER": {
+         "description"  : "Configuration of the RPC registration server",
+         "server" : "localhost",
+         "port" : "1234"
+    },
+
     "PROJECT": {
         "description" : "Maximum possible time a project expiration date can be extended, the extension time can be configured in days e.g., 30 days",
         "max_project_extension_time" : 30
