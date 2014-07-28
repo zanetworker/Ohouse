@@ -19,4 +19,4 @@ pymongo==2.6.3
 python-dateutil==2.2
 pytz==2014.1.1
 six==1.5.2
-wsgiref==0.1.2
+wsgiref==0.1.2 
