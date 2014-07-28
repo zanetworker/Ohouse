@@ -7,17 +7,21 @@ import pyrfc3339
 import datetime
 import pytz
 
+from amsoil.config import  expand_amsoil_path
+
 class OSliceAuthorityResourceManager(object):
     """
     Manage Slice Authority objects and resources.
 
     Generates neccessary fields when creating a new object.
     """
+    KEY_PATH = expand_amsoil_path('test/creds') + '/'
+    SA_CERT_FILE = 'sa-cert.pem'
+    SA_KEY_FILE = 'sa-key.pem'
+    CRED_EXPIRY = datetime.datetime.utcnow() + datetime.timedelta(days=100)
 
     AUTHORITY_NAME = 'sa' #: The short-name for this authority
-
-    SUPPORTED_SERVICES = ['SLICE','SLICE_MEMBER', 'SLIVER_INFO', 'PROJECT', 'PROJECT_MEMBER'] #: The objects supported by this authority
-
+    SUPPORTED_SERVICES = ['SLICE', 'SLICE_MEMBER', 'SLIVER_INFO', 'PROJECT', 'PROJECT_MEMBER'] #: The objects supported by this authority
     SUPPORTED_CREDENTIAL_TYPES = [{"type" : "SFA", "version" : 1}] #: The credential type supported by this authority
 
     def __init__(self):
@@ -29,7 +33,10 @@ class OSliceAuthorityResourceManager(object):
         super(OSliceAuthorityResourceManager, self).__init__()
         self._resource_manager_tools = pm.getService('resourcemanagertools')
         self._set_unique_keys()
-
+        self._sa_c = self._resource_manager_tools.read_file(OSliceAuthorityResourceManager.KEY_PATH +
+                                                            OSliceAuthorityResourceManager.SA_CERT_FILE)
+        self._sa_pr = self._resource_manager_tools.read_file(OSliceAuthorityResourceManager.KEY_PATH +
+                                                             OSliceAuthorityResourceManager.SA_KEY_FILE)
     #--- 'get_version' methods
     def _set_unique_keys(self):
         """
@@ -107,13 +114,21 @@ class OSliceAuthorityResourceManager(object):
                 yet expired
 
         """
+        self._resource_manager_tools.validate_credentials(credentials)
         config = pm.getService('config')
+        geniutil = pm.getService('geniutil')
         hostname = config.get('flask.hostname')
 
-        fields['SLICE_URN'] = 'urn:publicid+IDN+' + hostname + '+slice+' + fields.get('SLICE_NAME')
+        fields['SLICE_URN'] =  geniutil.encode_urn(OSliceAuthorityResourceManager.AUTHORITY_NAME, 'slice', str(fields.get('SLICE_NAME')))
         fields['SLICE_UID'] = str(uuid.uuid4())
         fields['SLICE_CREATION'] = pyrfc3339.generate(datetime.datetime.utcnow().replace(tzinfo=pytz.utc))
         fields['SLICE_EXPIRED'] = False
+
+        #Generating Slice Credentials
+        s_c, s_pu, s_pr = geniutil.create_certificate(fields['SLICE_URN'], self._sa_pr, self._sa_c)
+        fields['SLICE_CREDENTIALS'] = geniutil.create_credential(s_c, s_c, self._sa_pr, self._sa_c, "slice",
+                                                OSliceAuthorityResourceManager.CRED_EXPIRY)
+
         return self._resource_manager_tools.object_create(self.AUTHORITY_NAME, fields, 'slice')
 
     def update_slice(self, urn, client_cert, credentials, fields, options):
