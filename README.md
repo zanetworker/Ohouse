@@ -5,6 +5,7 @@
 This is/shall a Clearinghouse for all the projects mentioned.
 
 ## Installation
+A Guide for OHouse installation. 
 
 ### Environment
 
@@ -19,7 +20,10 @@ Python dependencies can then be installed using `pip install -r requirements.txt
 
 ## Run
 
-Fire up the server via `python src/main.py` and install the packages which are not found.
+- Fire up the server via `python src/main.py` and install the packages which are not found.
+- Additionally, run the the registration app server to allow users to register with Ohouse via 'python src/main_registration.py' and
+install the pacages which are not found
+- A reference implementation of the Registration App can be found [here](https://github.com/zanetworker/Ohouse-Registration-App)
 
 Note that sometimes the output is only given to the log in `log/amsoil.log`.
 
