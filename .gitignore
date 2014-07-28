@@ -3,7 +3,9 @@
 *.swp
 *.swo
 *~
+*.json
 log/*
+adminconsole/*
 .idea/*
 _deployment
 rmpyc.sh
