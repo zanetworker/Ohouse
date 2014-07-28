@@ -199,6 +199,36 @@ class ResourceManagerTools(object):
         return projection
 
     @serviceinterface
+    def read_file(self, path):
+        """
+        Read a file content
+
+        Args:
+            path: The path of the file to read
+
+        Returns:
+            The contents of the file
+        """
+        with file(path) as f:
+            s = f.read()
+            return s
+
+    @serviceinterface
+    def validate_credentials(self, credentials_to_validate):
+        """
+        Validation the credentials passed
+
+        Args:
+            path: the credentials to validate
+
+        Returns:
+            True of the credentials are valid
+        """
+
+        #TO-DO
+        pass
+
+    @serviceinterface
     def object_delete(self, authority, type_, urn):
         """
         Remove object (SLICE, MEMBER, etc.) from the database.
